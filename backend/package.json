@@ -1,0 +1,7 @@
+{
+	"dependencies": {
+		"convert-csv-to-json": "^4.37.0",
+		"express": "^5.2.1",
+		"multer": "^2.1.1"
+	}
+}

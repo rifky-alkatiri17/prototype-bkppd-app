@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+
+# env
+.env
+
+# upload sementara
+uploads/
+
+# logs
+npm-debug.log
