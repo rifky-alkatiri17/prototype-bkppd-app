@@ -1,30 +1,35 @@
 import { useState } from "react";
 import dataASN from "./data/dataASNBKPPD.json";
+import SearchBox from "./component/SearchBox.jsx";
+import Table from "./component/Table.jsx"
 
 function Dashboard() {
-  // console.log(dataASN);
-  const [keyword, setKeyword] = useState("");
+    // console.log(dataASN);
+    const [keyword, setKeyword] = useState("");
+    const [nilai, setNilai] = useState([]);
 
-  /*const filteredData = dataASN.filter((item) =>
-    item.nama.toLowerCase().includes(keyword.toLowerCase())
-  );*/
+    /*const filteredData = dataASN.filter((item) =>
+      item.nama.toLowerCase().includes(keyword.toLowerCase())
+    );*/
 
-  return (
-    <div style={{display:"flex", justifyAlign:"center", alignItems:"center", flexDirection:"column"}}>
+    function handleSearch(value){
+      console.log(value);
+      setKeyword(value); //hanya untuk debugging
+      // setNilai()
+    }
+
+    const filteredData = dataASN.map((item) =>
+      item.Nama.toLowerCase().includes(keyword.toLowerCase())
+    );
+
+    console.log(filteredData.Nama);
+
+    return (
+        <div style={{display:"flex", justifyAlign:"center", alignItems:"center", flexDirection:"column"}}>
       <h1>Data ASN</h1>
 
       {/*kotak pencarian*/}
-      <input
-        type="text"
-        placeholder="Cari nama ASN..."
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        style={{
-          padding: "10px",
-          width: "300px",
-          marginBottom: "20px"
-        }}
-      />
+      <SearchBox onHandleSearch={handleSearch} />
 
       {/*coba tampil di layar */}
       <p style={{
@@ -32,22 +37,9 @@ function Dashboard() {
       }}>{keyword}</p>
 
       {/*tabel data*/}
-      <table border="1" cellpadding="5" cellspacing="0" width="60%">
-        <thead>
-          <tr>
-            <th>No</th> <th>Nama</th> <th>NIP</th>
-          </tr>
-        </thead>
-        <tbody> 
-        {dataASN.map((item, index) => (
-          <tr>
-            <td>{index+1}</td> <td style={{textAlign:"left"}}>{item.Nama}</td> <td>{item.NIP}</td>
-          </tr>
-        ))}
-        </tbody>
-      </table>
+      <Table jsonASN={dataASN} />
     </div>
-  );
+    );
 }
 
 export default Dashboard;
