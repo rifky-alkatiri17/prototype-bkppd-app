@@ -6,23 +6,27 @@ import Table from "./component/Table.jsx"
 function Dashboard() {
     // console.log(dataASN);
     const [keyword, setKeyword] = useState("");
-    const [nilai, setNilai] = useState([]);
+    const [data, setData] = useState(Object.values(dataASN));
 
     /*const filteredData = dataASN.filter((item) =>
       item.nama.toLowerCase().includes(keyword.toLowerCase())
     );*/
 
-    function handleSearch(value){
-      console.log(value);
-      setKeyword(value); //hanya untuk debugging
-      // setNilai()
+    function handleSearch(value) {
+        // console.log(value);
+        setData(filteredData(dataASN,value));
+        // console.log(data)           
     }
 
-    const filteredData = dataASN.map((item) =>
-      item.Nama.toLowerCase().includes(keyword.toLowerCase())
-    );
+    /*const filteredData = dataASN.map((item) =>
+        item.Nama.toLowerCase().includes(keyword.toLowerCase())
+    );*/
 
-    console.log(filteredData.Nama);
+    const filteredData = (arr, keyword) =>{
+      return arr.filter(item => item.Nama.toLowerCase().includes(keyword.toLowerCase()))
+    }
+
+    
 
     return (
         <div style={{display:"flex", justifyAlign:"center", alignItems:"center", flexDirection:"column"}}>
@@ -37,7 +41,7 @@ function Dashboard() {
       }}>{keyword}</p>
 
       {/*tabel data*/}
-      <Table jsonASN={dataASN} />
+      <Table jsonASN={data} />
     </div>
     );
 }
