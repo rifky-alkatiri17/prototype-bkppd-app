@@ -1,7 +1,7 @@
-export default function Table({jsonASN}){
-  // console.log(jsonASN);
-  return(
-    <table border="1" cellPadding="5" cellSpacing="0" width="60%">
+export default function Table({ jsonASN }) {
+    // console.log(jsonASN);
+    return (
+        <table border="1" cellPadding="5" cellSpacing="0" width="60%">
         <thead>
           <tr>
             <th>No</th>
@@ -19,5 +19,5 @@ export default function Table({jsonASN}){
         ))}
         </tbody>
       </table>
-  )
+    )
 }
