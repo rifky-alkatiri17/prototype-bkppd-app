@@ -1,18 +1,47 @@
-const express = require("express");
-const multer = require("multer");
-const csvToJson = require("convert-csv-to-json");
+/*core modules
+--------------*/
 const fs = require("fs");
 
+/*npm or 3rd party modules
+--------------------------*/
+const express = require("express");
 const app = express();
+const multer = require("multer"); //untuk menangani upload file dr form
+const csvToJson = require("convert-csv-to-json");
+// const mysql = require('mysql2');
+const cors = require('cors');
 
-//config
-app.use(express.static('public'));
+/*user defined modules
+----------------------*/
+const db = require('./utility/functions');
+
+const jumlahDataPerHalaman = 10;
+
+async function getJlhData() {
+    const [jumlah] = await db.query('SELECT COUNT(*) AS jlhData FROM tb_asn');
+    return jumlah;
+}
+
+async function getData() {
+    const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT 10');
+    // console.log(rows);
+    return rows;
+}
+
+/*config
+--------*/
+// app.use(express.static('public'));
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 const upload = multer({ dest: "uploads/" });
 
+/*route
+-------*/
 app.post("/upload", upload.single("file"), (req, res) => {
     try {
         console.log(req.file);
-         //simpan file csv dari input (otomatis masuk folder upload oleh multer)
+        //simpan file csv dari input (otomatis masuk folder upload oleh multer)
         const filePath = req.file.path;
 
         // convert csv to json lalu simpan dalam variabel
@@ -49,10 +78,12 @@ app.post("/upload", upload.single("file"), (req, res) => {
 });
 
 //route
-/*app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     // res.sendFile(__dirname + '/public/index.html')
     // res.sendFile(__dirname + '/public/coba.html')
-});*/
+    console.log(`Jumlah Data = ${await getData()}`);
+    res.send(await getData());
+});
 
 // route download
 app.get('/download', (req, res) => {
