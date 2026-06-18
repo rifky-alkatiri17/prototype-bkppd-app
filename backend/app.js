@@ -15,6 +15,8 @@ const cors = require('cors');
 ----------------------*/
 const db = require('./utility/functions');
 
+/*variabel dan function
+------------------------*/
 const jumlahDataPerHalaman = 10;
 
 async function getJlhData() {
@@ -22,10 +24,17 @@ async function getJlhData() {
     return jumlah;
 }
 
-async function getData() {
+async function getData() {    
     const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT 10');
     // console.log(rows);
     return rows;
+}
+
+async function getDataSeq(nilai){ //sequencial
+    // const index = (nilai==0)? '': nilai;
+    const index = Number(nilai) || 0;
+    const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT ?, 10', [index]);
+    return rows
 }
 
 /*config
@@ -41,16 +50,20 @@ const upload = multer({ dest: "uploads/" });
 app.post("/upload", upload.single("file"), (req, res) => {
     try {
         console.log(req.file);
-        //simpan file csv dari input (otomatis masuk folder upload oleh multer)
+        /*simpan file csv dari input (otomatis masuk folder upload oleh multer)
+        -----------------------------------------------------------------------*/
         const filePath = req.file.path;
 
-        // convert csv to json lalu simpan dalam variabel
+        /*convert csv to json lalu simpan dalam variabel
+        ------------------------------------------------*/
         const json = csvToJson.fieldDelimiter(';').getJsonFromCsv(filePath);
 
-        // rangkai nama untuk output
+        /*rangkai nama untuk output
+        ---------------------------*/
         const outputPath = `results/${Date.now()}.json`;
 
-        // simpan hasil convert json ke folder results
+        /*simpan hasil convert json ke folder results
+        ----------------------------------------------*/
         // fs.writeFileSync(path,data,options)
         fs.writeFileSync(outputPath, JSON.stringify(json, null, 2));
 
@@ -59,7 +72,8 @@ app.post("/upload", upload.single("file"), (req, res) => {
             data: json
         });*
 
-         // tampilkan + link download
+         /*tampilkan + link download
+         ----------------------------*/
         /*res.send(`
           <h2>Hasil Convert JSON</h2>
           <pre>${JSON.stringify(json, null, 2)}</pre>
@@ -91,6 +105,11 @@ app.get('/download', (req, res) => {
     const file = req.query.berkas;
     res.download(file);
     // console.log(__dirname)
+});
+
+app.get('/:page', async (req,res)=>{
+    // res.send(coba(req.params.page));
+    res.send(await getDataSeq());
 });
 
 app.listen(3000, () => console.log(`Server jalan di http://localhost:3000`));

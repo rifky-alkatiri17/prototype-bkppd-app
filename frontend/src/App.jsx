@@ -9,12 +9,17 @@ import { useState, useEffect } from "react";
 /*component
 -----------*/
 import SearchBox from "./component/SearchBox.jsx";
-import Table from "./component/Table.jsx"
-import Button from "./component/Button.jsx"
+import Table from "./component/Table.jsx";
+import Button from "./component/Button.jsx";
+import Pagination from "./component/Pagination.jsx";
 
 /*component from lib
 --------------------*/
 // import { Button } from "@chakra-ui/react";
+
+/*framework/library
+-------------------*/
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 /*main component
@@ -66,6 +71,7 @@ function Dashboard() {
 
           {/*tabel data*/}
           <Table jsonASN={data} />
+          <Pagination />
         </div>
     );
 }
