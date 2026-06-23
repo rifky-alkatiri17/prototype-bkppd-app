@@ -20,22 +20,29 @@ const db = require('./utility/functions');
 const jumlahDataPerHalaman = 10;
 
 async function getJlhData() {
-    const [jumlah] = await db.query('SELECT COUNT(*) AS jlhData FROM tb_asn');
+    /*cara 1
+    --------*/
+    // const [jumlah] = await db.query('SELECT COUNT(*) AS jlhData FROM tb_asn');
+    /*cara 2
+    -------*/ 
+    const [rows] = await db.query('SELECT * FROM tb_asn');
+    const jumlah = rows.length;
     return jumlah;
 }
 
-async function getData() {    
-    const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT 10');
+async function getData(page) {
+    const jumlahDataPerHalaman = 10;
+    const jumlahData = await getJlhData();
+    const jumlahHalaman = Math.ceil(jumlahData/jumlahDataPerHalaman)
+    const halamanAktif = page? page : 1 ;
+    const awalData = (jumlahDataPerHalaman * halamanAktif) - jumlahDataPerHalaman;
+
+    const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT ?, ?', [awalData, jumlahDataPerHalaman]);
     // console.log(rows);
     return rows;
 }
 
-async function getDataSeq(nilai){ //sequencial
-    // const index = (nilai==0)? '': nilai;
-    const index = Number(nilai) || 0;
-    const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT ?, 10', [index]);
-    return rows
-}
+
 
 /*config
 --------*/
@@ -93,10 +100,13 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
 //route
 app.get('/', async (req, res) => {
-    // res.sendFile(__dirname + '/public/index.html')
-    // res.sendFile(__dirname + '/public/coba.html')
-    console.log(`Jumlah Data = ${await getData()}`);
+    console.log(await getJlhData());   
     res.send(await getData());
+});
+
+app.get('/:page', async (req, res) => {
+    console.log(await getJlhData());    
+    res.send(await getData(req.params.page));
 });
 
 // route download
@@ -105,11 +115,6 @@ app.get('/download', (req, res) => {
     const file = req.query.berkas;
     res.download(file);
     // console.log(__dirname)
-});
-
-app.get('/:page', async (req,res)=>{
-    // res.send(coba(req.params.page));
-    res.send(await getDataSeq());
 });
 
 app.listen(3000, () => console.log(`Server jalan di http://localhost:3000`));
