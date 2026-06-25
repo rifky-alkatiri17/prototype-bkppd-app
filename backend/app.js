@@ -20,21 +20,22 @@ const db = require('./utility/functions');
 const jumlahDataPerHalaman = 10;
 
 async function getJlhData() {
-    /*cara 1
+    /*cara 1 (lebih efisien)
     --------*/
-    // const [jumlah] = await db.query('SELECT COUNT(*) AS jlhData FROM tb_asn');
+    const [jumlah] = await db.query('SELECT COUNT(*) AS jlhData FROM tb_asn');
     /*cara 2
     -------*/ 
-    const [rows] = await db.query('SELECT * FROM tb_asn');
-    const jumlah = rows.length;
-    return jumlah;
+    // const [rows] = await db.query('SELECT * FROM tb_asn');
+    // const jumlah = rows.length;
+    return jumlah[0].jlhData;
 }
 
 async function getData(page) {
     const jumlahDataPerHalaman = 10;
     const jumlahData = await getJlhData();
     const jumlahHalaman = Math.ceil(jumlahData/jumlahDataPerHalaman)
-    const halamanAktif = page? page : 1 ;
+    // const halamanAktif = page? page : 1 ;
+    const halamanAktif = Number(page) || 1;
     const awalData = (jumlahDataPerHalaman * halamanAktif) - jumlahDataPerHalaman;
 
     const [rows] = await db.query('SELECT nama,nip_baru,nomor_hp,unor_induk,status_cpns_pns FROM tb_asn LIMIT ?, ?', [awalData, jumlahDataPerHalaman]);

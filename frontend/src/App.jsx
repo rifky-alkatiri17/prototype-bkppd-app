@@ -1,6 +1,7 @@
 /*hook react
 ------------*/
 import { useState, useEffect } from "react";
+import { useSearchParams, useParams } from 'react-router-dom';
 
 /*data
 ------*/
@@ -28,32 +29,37 @@ function Dashboard() {
     // console.log(dataASN);
     const [keyword, setKeyword] = useState("");
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     // const [dataFilter, setDataFilter] = useState([]);
 
-    const getData = async () => {
-        const res = await fetch('http://localhost:3000');
+    // const [searchParams] = useSearchParams();
+    // const page = searchParams.get('page');
+    // console.log(page);
+
+    const { page } = useParams(); // ambil data dari params url
+    // console.log(page);
+
+    const getData = async (hal) => {
+        const page = Number(hal) || 1;
+        const res = await fetch('http://localhost:3000/' + page);
         const response = await res.json();
         setData(response);
-        console.log(response);
-        // return response.data
     }
 
-
+    /*ini langsung jalan saat main comp. dijalankan
+    -----------------------------------------------*/
     useEffect(() => {
-        getData()
+        getData(page);
+        // console.log(data)
     }, []);
 
 
     function handleSearch(value) {
-        setData(filteredData(data, value));
-        console.log(data)
+        const hasil = data.filter(item =>
+            item.nama.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredData(hasil);
     }
-
-    const filteredData = (arr, keyword) => {
-        return arr.filter(item => item.nama.toLowerCase().includes(keyword.toLowerCase()))
-    }
-
-
 
     return (
         <div style={{display:"flex", justifyAlign:"center", alignItems:"center", flexDirection:"column"}}>
@@ -70,7 +76,7 @@ function Dashboard() {
           }}>{keyword}</p>
 
           {/*tabel data*/}
-          <Table jsonASN={data} />
+          <Table jsonASN={filteredData} />
           <Pagination />
         </div>
     );
